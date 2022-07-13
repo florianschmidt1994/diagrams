@@ -248,7 +248,7 @@ export default function App() {
                                 const name = diagramName ? diagramName : generateRandomName()
                                 set(ref(database, name), {
                                     source: text,
-                                    user: user.uid
+                                    user: (user && user.uid) || "anonymous"
                                 })
                                 navigate(`/diagrams/${name}`)
                             }}>Store
