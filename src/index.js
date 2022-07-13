@@ -39,6 +39,7 @@ root.render(
             <Routes>
                 <Route path="/" element={<App/>}/>
                 <Route path="/login" element={<Login/>}/>
+                <Route path="/diagrams/:diagramName" element={<App/>} />
             </Routes>
         </BrowserRouter>
     </React.StrictMode>

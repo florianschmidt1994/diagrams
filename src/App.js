@@ -2,6 +2,13 @@ import mermaid from 'mermaid'
 import {useEffect, useState} from 'react'
 import {refractor} from 'refractor'
 import {Canvg} from "canvg";
+import {useList} from "react-firebase-hooks/database";
+import {get, getDatabase, ref, set} from 'firebase/database';
+import {app} from "./firebase";
+import {adjectives, animals, colors, uniqueNamesGenerator} from "unique-names-generator";
+import {useAuthState} from "react-firebase-hooks/auth";
+import {getAuth} from "firebase/auth";
+import {useParams} from "react-router-dom";
 
 // pdf export
 // share line
@@ -72,18 +79,10 @@ function Text({children}) {
     return children
 }
 
-function Editor({
-                    defaultValue, onChange = () => {
-    }
-                }) {
+function noop() {
+}
 
-    const [text, setText] = useState(defaultValue)
-
-    function handleChange(e) {
-        const text = e.target.value;
-        setText(text)
-        onChange(text)
-    }
+function Editor({value, onChange = noop}) {
 
     function highlight(text) {
         return refractor.highlight(text, 'sequence').children.map(c => {
@@ -96,21 +95,39 @@ function Editor({
     }
 
     return (<div className="relative bg-slate-900 w-full h-full text-white text-xs">
-        <textarea
-            defaultValue={defaultValue} onChange={handleChange} value={text}
-            className="p-4 absolute top-0 left-0 text-xs font-mono text-transparent caret-white whitespace-pre-wrap resize-none w-full h-full outline-0 bg-transparent"/>
+        <textarea onChange={e => onChange(e.target.value)} value={value}
+                  className="p-4 absolute top-0 left-0 text-xs font-mono text-transparent caret-white whitespace-pre-wrap resize-none w-full h-full outline-0 bg-transparent"/>
         <pre
             className="p-4 absolute top-0 left-0 pointer-events-none text-xs font-mono whitespace-pre-wrap w-full h-full">
-        {highlight(text)}
+        {highlight(value)}
     </pre>
     </div>);
 }
+
+const database = getDatabase(app);
+const auth = getAuth(app);
 
 export default function App() {
 
     const [svgCode, setSvgCode] = useState("");
     const [isResizing, setIsResizing] = useState(false)
-    const [text, setText] = useState(defaultValue)
+    const [text, setText] = useState("")
+    const [snapshots, loading, error] = useList(ref(database));
+    const [user, userLoading, userError] = useAuthState(auth);
+    const {diagramName} = useParams()
+
+    useEffect(() => {
+        if (diagramName) {
+            const obj = get(ref(database, diagramName)).then(res => {
+                // todo refactor change handling here and pull state up from the editor!
+                if (res.val().source) {
+                    handleChange(res.val().source)
+                } else {
+                    console.log("No source present")
+                }
+            })
+        }
+    }, [diagramName])
 
     useEffect(() => {
         createDiagramSVG(text)
@@ -206,6 +223,13 @@ export default function App() {
     }
 
 
+    function generateRandomName() {
+        return uniqueNamesGenerator({
+            dictionaries: [adjectives, colors, animals],
+            separator: '-',
+        });
+    }
+
     return (
         <>
             <div
@@ -214,17 +238,30 @@ export default function App() {
                     className='col-span-2 row-span-1 w-full h-12 bg-slate-700 border-b-2 border-slate-900 text-white flex flex-row items-center px-4 text-sm text-blue-100 font-light font-mono'>
                     Create pretty diagrams online
                     <button type="button" className="rounded p-2 bg-slate-500 text-white ml-10"
-                            onClick={exportPNG}>Export as PNG</button>
+                            onClick={exportPNG}>Export as PNG
+                    </button>
+
+                    <button type="button" className="rounded p-2 bg-slate-500 text-white ml-10"
+                            onClick={() => {
+                                const name = diagramName ? diagramName : generateRandomName()
+                                set(ref(database, name), {
+                                    source: text,
+                                    user: user.uid
+                                })
+
+                            }}>Store
+                    </button>
                 </div>
                 <div id="resizable" className='bg-slate-800 h-full resize-x relative'
                      style={{width: `${width}px`, userSelect: isResizing ? "none" : "text"}}>
-                    <Editor defaultValue={defaultValue} onChange={e => handleChange(e)}/>
+                    <Editor value={text} onChange={e => handleChange(e)}/>
                     <div
                         className={`transition-colors w-2 h-40 hover:bg-slate-300 ${isResizing ? "bg-slate-300" : "bg-slate-500"} rounded right-2 top-1/2 absolute -translate-y-1/2`}
                         onMouseDown={(e) => handleResize(e)}
                     ></div>
                 </div>
-                <div className='w-full h-full p-4 flex items-center justify-center' dangerouslySetInnerHTML={{__html: svgCode}}></div>
+                <div className='w-full h-full p-4 flex items-center justify-center'
+                     dangerouslySetInnerHTML={{__html: svgCode}}></div>
             </div>
         </>
     )
