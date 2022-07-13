@@ -95,7 +95,7 @@ function Editor({
         })
     }
 
-    return (<div className="relative bg-gray-800 w-full h-full text-white text-xs">
+    return (<div className="relative bg-slate-900 w-full h-full text-white text-xs">
         <textarea
             defaultValue={defaultValue} onChange={handleChange} value={text}
             className="p-4 absolute top-0 left-0 text-xs font-mono text-transparent caret-white whitespace-pre-wrap resize-none w-full h-full outline-0 bg-transparent"/>
@@ -211,16 +211,16 @@ export default function App() {
             <div
                 className='grid grid-cols-[min-content_1fr] grid-rows-[min-content_1fr] h-screen w-screen'>
                 <div
-                    className='col-span-2 row-span-1 w-full h-12 bg-gray-700 border-b-2 border-gray-900 text-white flex flex-row items-center px-4 text-sm text-blue-100 font-light font-mono'>
+                    className='col-span-2 row-span-1 w-full h-12 bg-slate-700 border-b-2 border-slate-900 text-white flex flex-row items-center px-4 text-sm text-blue-100 font-light font-mono'>
                     Create pretty diagrams online
-                    <button type="button" className="rounded p-2 bg-gray-500 text-white ml-10"
+                    <button type="button" className="rounded p-2 bg-slate-500 text-white ml-10"
                             onClick={exportPNG}>Export as PNG</button>
                 </div>
-                <div id="resizable" className='bg-gray-800 h-full resize-x relative'
+                <div id="resizable" className='bg-slate-800 h-full resize-x relative'
                      style={{width: `${width}px`, userSelect: isResizing ? "none" : "text"}}>
                     <Editor defaultValue={defaultValue} onChange={e => handleChange(e)}/>
                     <div
-                        className={`transition-colors w-2 h-40 hover:bg-gray-300 ${isResizing ? "bg-gray-300" : "bg-gray-500"} rounded right-2 top-1/2 absolute -translate-y-1/2`}
+                        className={`transition-colors w-2 h-40 hover:bg-slate-300 ${isResizing ? "bg-slate-300" : "bg-slate-500"} rounded right-2 top-1/2 absolute -translate-y-1/2`}
                         onMouseDown={(e) => handleResize(e)}
                     ></div>
                 </div>
