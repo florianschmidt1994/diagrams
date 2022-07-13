@@ -8,8 +8,9 @@ import {app} from "./firebase";
 import {adjectives, animals, colors, uniqueNamesGenerator} from "unique-names-generator";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {getAuth} from "firebase/auth";
-import {useParams} from "react-router-dom";
+import {useParams, useNavigate} from "react-router-dom";
 
+// setup CI / CD
 // pdf export
 // share line
 // embeddable view
@@ -111,10 +112,11 @@ export default function App() {
 
     const [svgCode, setSvgCode] = useState("");
     const [isResizing, setIsResizing] = useState(false)
-    const [text, setText] = useState("")
+    const {diagramName} = useParams()
+    const [text, setText] = useState(diagramName ? "" : defaultValue)
     const [snapshots, loading, error] = useList(ref(database));
     const [user, userLoading, userError] = useAuthState(auth);
-    const {diagramName} = useParams()
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (diagramName) {
@@ -248,7 +250,7 @@ export default function App() {
                                     source: text,
                                     user: user.uid
                                 })
-
+                                navigate(`/diagrams/${name}`)
                             }}>Store
                     </button>
                 </div>
