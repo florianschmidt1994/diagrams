@@ -82,7 +82,7 @@ function Editor({
     function handleChange(e) {
         const text = e.target.value;
         setText(text)
-        console.log("setting text")
+        onChange(text)
     }
 
     function highlight(text) {
