@@ -1,7 +1,5 @@
-import mermaid from 'mermaid'
 import {useEffect, useState} from 'react'
 import {refractor} from 'refractor'
-import {Canvg} from "canvg";
 import {useList} from "react-firebase-hooks/database";
 import {get, getDatabase, ref, set} from 'firebase/database';
 import {app} from "./firebase";
@@ -10,6 +8,7 @@ import {useAuthState} from "react-firebase-hooks/auth";
 import {getAuth} from "firebase/auth";
 import {useNavigate, useParams} from "react-router-dom";
 import {Editor} from "./Editor";
+import {Diagram} from "./Diagram";
 
 // make editor better
 // setup CI / CD
@@ -79,13 +78,13 @@ const defaultValue = `sequenceDiagram
 refractor.register(sequence)
 
 
-
 const database = getDatabase(app);
 const auth = getAuth(app);
 
+
+
 export default function App() {
 
-    const [svgCode, setSvgCode] = useState("");
     const [isResizing, setIsResizing] = useState(false)
     const {diagramName} = useParams()
     const [text, setText] = useState(diagramName ? "" : defaultValue)
@@ -106,38 +105,9 @@ export default function App() {
         }
     }, [diagramName])
 
-    useEffect(() => {
-        createDiagramSVG(text)
-            .then(svg => setSvgCode(svg))
-            .catch(err => console.log(err))
-
-    }, []);
-
-
     function handleChange(e) {
         const input = e;
         setText(input)
-
-        createDiagramSVG(input)
-            .then(svg => setSvgCode(svg))
-            .catch(err => console.error(err))
-
-    }
-
-    function createDiagramSVG(text) {
-        return new Promise((resolve, reject) => {
-            try {
-                mermaid.parseError = (err, hash) => {
-                    reject(err);
-                }
-
-                mermaid.mermaidAPI.render('mermaid', text, (svgCode) => {
-                    resolve(svgCode);
-                })
-            } catch (err) {
-                reject(err)
-            }
-        })
     }
 
     const [width, setWidth] = useState(420)
@@ -159,47 +129,6 @@ export default function App() {
         window.addEventListener("mouseup", mouseup)
     }
 
-    function addWhiteBackground(canvas) {
-        const ctx = canvas.getContext('2d');
-
-        ctx.globalCompositeOperation = 'destination-over'; // puts the white rectangle behind the existing SVG
-        const fillStyleBefore = ctx.fillStyle;
-        ctx.fillStyle = "white";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = fillStyleBefore
-    }
-
-    async function renderSVGToCanvas(ctx, svgCode) {
-        const v = await Canvg.from(ctx, svgCode);
-        v.start();
-        v.stop();
-    }
-
-    function exportCanvasToPNG(canvas) {
-        const downloadLink = document.createElement('a');
-        downloadLink.setAttribute('download', 'CanvasAsImage.png');
-        let dataURL = canvas.toDataURL('image/png');
-        let url = dataURL.replace(/^data:image\/png/, 'data:application/octet-stream');
-        downloadLink.setAttribute('href', url);
-        downloadLink.click();
-    }
-
-    function createCanvas(width = 1000, height = 10000) {
-        const canvas = document.createElement('canvas');
-        canvas.setAttribute("width", width);
-        canvas.setAttribute("height", height);
-        const ctx = canvas.getContext('2d');
-        return {canvas, ctx};
-    }
-
-    async function exportPNG() {
-        const {canvas, ctx} = createCanvas();
-        await renderSVGToCanvas(ctx, svgCode);
-        addWhiteBackground(canvas);
-        exportCanvasToPNG(canvas);
-    }
-
-
     function generateRandomName() {
         return uniqueNamesGenerator({
             dictionaries: [adjectives, colors, animals],
@@ -214,9 +143,9 @@ export default function App() {
                 <div
                     className='col-span-2 row-span-1 w-full h-12 bg-slate-700 border-b-2 border-slate-900 text-white flex flex-row items-center px-4 text-sm text-blue-100 font-light font-mono'>
                     Create pretty diagrams online
-                    <button type="button" className="rounded p-2 bg-slate-500 text-white ml-10"
-                            onClick={exportPNG}>Export as PNG
-                    </button>
+                    {/*<button type="button" className="rounded p-2 bg-slate-500 text-white ml-10"*/}
+                    {/*        onClick={exportPNG}>Export as PNG*/}
+                    {/*</button>*/}
 
                     <button type="button" className="rounded p-2 bg-slate-500 text-white ml-10"
                             onClick={() => {
@@ -237,8 +166,7 @@ export default function App() {
                         onMouseDown={(e) => handleResize(e)}
                     ></div>
                 </div>
-                <div className='w-full h-full p-4 flex items-center justify-center'
-                     dangerouslySetInnerHTML={{__html: svgCode}}></div>
+                <Diagram source={text}/>
             </div>
         </>
     )

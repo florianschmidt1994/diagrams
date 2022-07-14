@@ -24,3 +24,11 @@ code {
   height: auto !important;
   max-height: 90vh;
 }
+
+/* For some reason, mermaidJS renders the error
+image under the dmermaid element under the body of
+the DOM. This hides this element
+*/
+#dmermaid > #mermaid {
+  height: 0 !important;
+}
