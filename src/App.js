@@ -1,12 +1,11 @@
 import {useEffect, useState} from 'react'
 import {refractor} from 'refractor'
-import {useList} from "react-firebase-hooks/database";
 import {get, getDatabase, ref, set} from 'firebase/database';
 import {app} from "./firebase";
 import {adjectives, animals, colors, uniqueNamesGenerator} from "unique-names-generator";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {getAuth} from "firebase/auth";
-import {useNavigate, useParams} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import {Editor} from "./Editor";
 import {Diagram} from "./Diagram";
 
@@ -82,13 +81,11 @@ const database = getDatabase(app);
 const auth = getAuth(app);
 
 
-
 export default function App() {
 
     const [isResizing, setIsResizing] = useState(false)
     const {diagramName} = useParams()
     const [text, setText] = useState(diagramName ? "" : defaultValue)
-    const [snapshots, loading, error] = useList(ref(database));
     const [user, userLoading, userError] = useAuthState(auth);
     const navigate = useNavigate();
 
@@ -136,38 +133,45 @@ export default function App() {
         });
     }
 
+    function storeDiagram() {
+        const name = diagramName ? diagramName : generateRandomName()
+        set(ref(database, name), {
+            source: text,
+            user: (user && user.uid) || "anonymous"
+        })
+        navigate(`/diagrams/${name}`)
+    }
+
     return (
         <>
             <div
                 className='grid grid-cols-[min-content_1fr] grid-rows-[min-content_1fr] h-screen w-screen'>
                 <div
-                    className='col-span-2 row-span-1 w-full h-12 bg-slate-700 border-b-2 border-slate-900 text-white flex flex-row items-center px-4 text-sm text-blue-100 font-light font-mono'>
-                    Create pretty diagrams online
+                    className='col-span-2 text-sm row-span-1 w-full h-12 bg-slate-700 border-b-2 border-slate-900 text-white flex flex-row items-center px-4 py-6 text-sm text-blue-100 font-light font-mono'>
+                    <Link to="/list" className="underline mr-6 hover:darken">All your diagrams</Link>
+                    <Link to="/login" className="underline mr-6">Login</Link>
                     {/*<button type="button" className="rounded p-2 bg-slate-500 text-white ml-10"*/}
                     {/*        onClick={exportPNG}>Export as PNG*/}
                     {/*</button>*/}
 
-                    <button type="button" className="rounded p-2 bg-slate-500 text-white ml-10"
-                            onClick={() => {
-                                const name = diagramName ? diagramName : generateRandomName()
-                                set(ref(database, name), {
-                                    source: text,
-                                    user: (user && user.uid) || "anonymous"
-                                })
-                                navigate(`/diagrams/${name}`)
-                            }}>Store
+                    <button type="button" className="underline"
+                            onClick={storeDiagram}>Store
                     </button>
                 </div>
                 <div id="resizable" className='bg-slate-800 h-full resize-x relative'
                      style={{width: `${width}px`, userSelect: isResizing ? "none" : "text"}}>
                     <Editor value={text} onChange={e => handleChange(e)}/>
-                    <div
-                        className={`transition-colors w-2 h-40 hover:bg-slate-300 ${isResizing ? "bg-slate-300" : "bg-slate-500"} rounded right-2 top-1/2 absolute -translate-y-1/2`}
-                        onMouseDown={(e) => handleResize(e)}
-                    ></div>
+                    <ResizeHandle handleResize={handleResize} isResizing={isResizing}/>
                 </div>
                 <Diagram source={text}/>
             </div>
         </>
     )
+}
+
+function ResizeHandle({handleResize, isResizing}) {
+    return <div
+        className={`transition-colors w-2 h-40 hover:bg-slate-300 ${isResizing ? "bg-slate-300" : "bg-slate-500"} rounded right-2 top-1/2 absolute -translate-y-1/2`}
+        onMouseDown={(e) => handleResize(e)}
+    ></div>
 }
