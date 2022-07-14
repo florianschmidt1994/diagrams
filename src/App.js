@@ -8,11 +8,16 @@ import {app} from "./firebase";
 import {adjectives, animals, colors, uniqueNamesGenerator} from "unique-names-generator";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {getAuth} from "firebase/auth";
-import {useParams, useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
+import {Editor} from "./Editor";
 
+// make editor better
 // setup CI / CD
+// list all your diagrams
+// refactor code
+// show error inline
+// https://github.com/satya164/react-simple-code-editor
 // pdf export
-// share line
 // embeddable view
 // real-time collaboration, ...
 // OT https://en.wikipedia.org/wiki/Operational_transformation
@@ -24,11 +29,12 @@ import {useParams, useNavigate} from "react-router-dom";
 // connect with git?
 // examples
 // tutorials
-// save function
-// login
 // SSO
+// registration
+// making it pretty
 // embed in Confluence button
 // show errors in place
+// combine with GPT-3 auto drawer / vqgan-clip
 
 function sequence(Prism) {
     Prism.languages.sequence = {
@@ -72,38 +78,7 @@ const defaultValue = `sequenceDiagram
 
 refractor.register(sequence)
 
-function Keyword({children}) {
-    return <pre className='text-red-400 inline'>{children}</pre>
-}
 
-function Text({children}) {
-    return children
-}
-
-function noop() {
-}
-
-function Editor({value, onChange = noop}) {
-
-    function highlight(text) {
-        return refractor.highlight(text, 'sequence').children.map(c => {
-            if (c.type === "text") {
-                return <Text>{c.value}</Text>;
-            } else if (c.type === "element") {
-                return <Keyword>{c.children[0].value}</Keyword>
-            }
-        })
-    }
-
-    return (<div className="relative bg-slate-900 w-full h-full text-white text-xs">
-        <textarea onChange={e => onChange(e.target.value)} value={value}
-                  className="p-4 absolute top-0 left-0 text-xs font-mono text-transparent caret-white whitespace-pre-wrap resize-none w-full h-full outline-0 bg-transparent"/>
-        <pre
-            className="p-4 absolute top-0 left-0 pointer-events-none text-xs font-mono whitespace-pre-wrap w-full h-full">
-        {highlight(value)}
-    </pre>
-    </div>);
-}
 
 const database = getDatabase(app);
 const auth = getAuth(app);
