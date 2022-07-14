@@ -34,15 +34,7 @@ import {Diagram} from "./Diagram";
 // show errors in place
 // combine with GPT-3 auto drawer / vqgan-clip
 
-function sequence(Prism) {
-    Prism.languages.sequence = {
-        keyword: {
-            pattern: /sequenceDiagram|alt|opt|end|else|participant|actor|loop|activate|deactivate|Note|over|right of|left of|critical|->|-->|->>|-->>|-x|--x|-\)|--\)/
-        }
-    }
-}
 
-sequence.displayName = "sequence"
 
 
 const defaultValue = `sequenceDiagram
@@ -74,9 +66,6 @@ const defaultValue = `sequenceDiagram
         end
     end`
 
-refractor.register(sequence)
-
-
 const database = getDatabase(app);
 const auth = getAuth(app);
 
@@ -105,6 +94,9 @@ export default function App() {
     function handleChange(e) {
         const input = e;
         setText(input)
+        if (diagramName) {
+            saveDiagram(diagramName, input, user)
+        }
     }
 
     const [width, setWidth] = useState(420)
@@ -133,12 +125,16 @@ export default function App() {
         });
     }
 
-    function storeDiagram() {
-        const name = diagramName ? diagramName : generateRandomName()
+    function saveDiagram(name, text, user = null) {
         set(ref(database, name), {
             source: text,
             user: (user && user.uid) || "anonymous"
         })
+    }
+
+    function saveAndGenerateURL() {
+        const name = diagramName ? diagramName : generateRandomName()
+        saveDiagram(name, text, user);
         navigate(`/diagrams/${name}`)
     }
 
@@ -155,7 +151,7 @@ export default function App() {
                     {/*</button>*/}
 
                     <button type="button" className="underline"
-                            onClick={storeDiagram}>Store
+                            onClick={saveAndGenerateURL}>Store
                     </button>
                 </div>
                 <div id="resizable" className='bg-slate-800 h-full resize-x relative'
