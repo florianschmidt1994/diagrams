@@ -28,13 +28,13 @@ export default function EmbeddableDiagram() {
 
   if (snapshot) {
     return (
-      <div className="w-full h-full bg-slate-100 grid grid-rows-[1fr_min-content] rounded">
+      <div className="w-full h-full bg-gray-100 grid grid-rows-[1fr_min-content] rounded">
         <Diagram source={snapshot.val().source} />
-        <div className="w-full bg-slate-500 p-2 px-4 text-white text-sm flex flex-row gap-4 rounded-b">
+        <div className="w-full bg-gray-500 p-2 px-4 text-white text-sm flex flex-row gap-4 rounded-b">
           <Link
             target="_blank"
             rel="noopener noreferrer"
-            className="block text-sm text-slate-200 hover:underline"
+            className="block text-sm text-gray-200 hover:underline"
             to={"/diagrams/" + diagramName}
           >
             Edit
@@ -43,7 +43,7 @@ export default function EmbeddableDiagram() {
           <Link
             target="_blank"
             rel="noopener noreferrer"
-            className="block text-sm text-slate-200 hover:underline"
+            className="block text-sm text-gray-200 hover:underline"
             to={"/diagrams/" + diagramName + "/embed"}
           >
             Open in Fullscreen

@@ -31,7 +31,7 @@ export function Editor({ value, onChange = noop }) {
   }
 
   return (
-    <div className="relative bg-slate-900 w-full h-full text-white text-xs">
+    <div className="relative bg-gray-900 w-full h-full text-white text-xs">
       <textarea
         spellCheck="false"
         autoCorrect="off"

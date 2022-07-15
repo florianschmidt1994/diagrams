@@ -1,6 +1,9 @@
 import mermaid from "mermaid";
 import { useEffect, useState } from "react";
 
+// pan - zoom? https://github.com/bumbu/svg-pan-zoom
+// todo: change title and favicon
+
 export function Diagram({ source }) {
   function createDiagramSVG(text) {
     return new Promise((resolve, reject) => {

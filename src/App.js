@@ -1,12 +1,6 @@
 import { useEffect, useState } from "react";
-import { get, getDatabase, ref, set } from "firebase/database";
+import { get, getDatabase, ref, set, push } from "firebase/database";
 import { app } from "./firebase";
-import {
-  adjectives,
-  animals,
-  colors,
-  uniqueNamesGenerator,
-} from "unique-names-generator";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { getAuth } from "firebase/auth";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -79,7 +73,7 @@ export default function App() {
 
   useEffect(() => {
     if (diagramName) {
-      const obj = get(ref(database, diagramName)).then((res) => {
+      const obj = get(ref(database, `diagrams/${diagramName}`)).then((res) => {
         // todo refactor change handling here and pull state up from the editor!
         if (res.val().source) {
           handleChange(res.val().source);
@@ -118,17 +112,25 @@ export default function App() {
   }
 
   function generateRandomName() {
-    return uniqueNamesGenerator({
-      dictionaries: [adjectives, colors, animals],
-      separator: "-",
-    });
+    return window.crypto.randomUUID();
   }
 
   function saveDiagram(name, text, user = null) {
-    set(ref(database, name), {
+    // todo: handle user not logged in
+    if (!user && userLoading) {
+      return;
+    }
+
+    if (!user && !userLoading) {
+      throw new Error("Not logged in!");
+    }
+
+    set(ref(database, `diagrams/${name}`), {
       source: text,
       user: (user && user.uid) || "anonymous",
     });
+
+    push(ref(database, `users/${user.uid}/diagrams`), name);
   }
 
   function saveAndGenerateURL() {
@@ -140,14 +142,14 @@ export default function App() {
   return (
     <>
       <div className="grid grid-cols-[min-content_1fr] grid-rows-[min-content_1fr] h-screen w-screen">
-        <div className="col-span-2 text-sm row-span-1 w-full h-12 bg-slate-700 border-b-2 border-slate-900 text-white flex flex-row items-center px-4 py-6 text-sm text-blue-100 font-light font-mono">
+        <div className="col-span-2 text-sm row-span-1 w-full h-12 bg-gray-700 border-b-2 border-gray-900 text-white flex flex-row items-center px-4 py-6 text-sm text-blue-100 font-light font-mono">
           <Link to="/list" className="underline mr-6 hover:darken">
             All your diagrams
           </Link>
           <Link to="/login" className="underline mr-6">
             Login
           </Link>
-          {/*<button type="button" className="rounded p-2 bg-slate-500 text-white ml-10"*/}
+          {/*<button type="button" className="rounded p-2 bg-gray-500 text-white ml-10"*/}
           {/*        onClick={exportPNG}>Export as PNG*/}
           {/*</button>*/}
 
@@ -161,7 +163,7 @@ export default function App() {
         </div>
         <div
           id="resizable"
-          className="bg-slate-800 h-full resize-x relative"
+          className="bg-gray-800 h-full resize-x relative"
           style={{
             width: `${width}px`,
             userSelect: isResizing ? "none" : "text",
@@ -179,9 +181,9 @@ export default function App() {
 function ResizeHandle({ handleResize, isResizing }) {
   return (
     <div
-      className={`transition-colors w-2 h-40 hover:bg-slate-300 ${
-        isResizing ? "bg-slate-300" : "bg-slate-500"
-      } rounded right-2 top-1/2 absolute -translate-y-1/2`}
+      className={`transition-colors w-2 h-40 hover:bg-gray-300 ${
+        isResizing ? "bg-gray-300" : "bg-gray-500"
+      } rounded right-2 top-1/2 absolute -trangray-y-1/2`}
       onMouseDown={(e) => handleResize(e)}
     ></div>
   );

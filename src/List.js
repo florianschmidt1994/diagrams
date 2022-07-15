@@ -8,15 +8,15 @@ const database = getDatabase(app);
 export default function List() {
   const [snapshots, loading, error] = useList(ref(database));
   return (
-    <div className="bg-slate-900 w-full h-full text-white flex items-center justify-center flex-col">
+    <div className="bg-gray-900 w-full h-full text-white flex items-center justify-center flex-col">
       <header className="text-white font-bold text-lg pb-4">
         All your diagrams
       </header>
-      <div className="bg-slate-600 p-4 rounded">
+      <div className="bg-gray-600 p-4 rounded">
         {snapshots.map((s) => {
           return (
             <Link
-              className="block mb-4 text-slate-200 text-center hover:underline"
+              className="block mb-4 text-gray-200 text-center hover:underline"
               to={"/diagrams/" + s.key}
             >
               {s.key}
