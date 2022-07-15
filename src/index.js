@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import App from "./App";
+import Editor from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { HashRouter, Link, Route, Routes, useNavigate } from "react-router-dom";
 import {
@@ -10,12 +10,12 @@ import {
 } from "react-firebase-hooks/auth";
 import { app } from "./firebase";
 import { getAuth } from "firebase/auth";
-import List from "./List";
+import AllDiagrams from "./List";
 import EmbeddableDiagram from "./EmbeddableDiagram";
 
 const auth = getAuth(app);
 
-function Login() {
+function LoginPage() {
   const [signInWithEmailAndPassword, user, loading, error] =
     useSignInWithEmailAndPassword(auth);
   const [username, setUsername] = useState("");
@@ -67,7 +67,7 @@ function Login() {
   );
 }
 
-function Register() {
+function RegistrationPage() {
   const [createUserWithEmailAndPassword, user, loading, error] =
     useCreateUserWithEmailAndPassword(auth);
   const [username, setUsername] = useState("");
@@ -124,16 +124,18 @@ function Register() {
   );
 }
 
+function LandingPage() {}
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <HashRouter>
       <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/list" element={<List />} />
-        <Route path="/diagrams/:diagramName" element={<App />} />
+        <Route path="/" element={<Editor />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegistrationPage />} />
+        <Route path="/list" element={<AllDiagrams />} />
+        <Route path="/diagrams/:diagramName" element={<Editor />} />
         <Route
           path="/diagrams/:diagramName/embed"
           element={<EmbeddableDiagram />}

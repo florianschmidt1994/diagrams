@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { get, getDatabase, ref, set, push } from "firebase/database";
+import { get, getDatabase, push, ref, set } from "firebase/database";
 import { app } from "./firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { getAuth } from "firebase/auth";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Editor } from "./Editor";
 import { Diagram } from "./Diagram";
+import Navbar from "./Navbar";
+import downloadSvgAsPng from "./downloadSvgAsPng";
 
 // make editor better
 // setup CI / CD
@@ -70,6 +72,7 @@ export default function App() {
   const [text, setText] = useState(diagramName ? "" : defaultValue);
   const [user, userLoading, userError] = useAuthState(auth);
   const navigate = useNavigate();
+  const [svg, setSvg] = useState();
 
   useEffect(() => {
     if (diagramName) {
@@ -142,25 +145,11 @@ export default function App() {
   return (
     <>
       <div className="grid grid-cols-[min-content_1fr] grid-rows-[min-content_1fr] h-screen w-screen">
-        <div className="col-span-2 text-sm row-span-1 w-full h-12 bg-gray-700 border-b-2 border-gray-900 text-white flex flex-row items-center px-4 py-6 text-sm text-blue-100 font-light font-mono">
-          <Link to="/list" className="underline mr-6 hover:darken">
-            All your diagrams
-          </Link>
-          <Link to="/login" className="underline mr-6">
-            Login
-          </Link>
-          {/*<button type="button" className="rounded p-2 bg-gray-500 text-white ml-10"*/}
-          {/*        onClick={exportPNG}>Export as PNG*/}
-          {/*</button>*/}
-
-          <button
-            type="button"
-            className="underline"
-            onClick={saveAndGenerateURL}
-          >
-            Store
-          </button>
-        </div>
+        <Navbar
+          className="col-span-2 row-span-1"
+          onSave={saveAndGenerateURL}
+          onExport={() => downloadSvgAsPng(svg)}
+        />
         <div
           id="resizable"
           className="bg-gray-800 h-full resize-x relative"
@@ -172,7 +161,7 @@ export default function App() {
           <Editor value={text} onChange={(e) => handleChange(e)} />
           <ResizeHandle handleResize={handleResize} isResizing={isResizing} />
         </div>
-        <Diagram source={text} />
+        <Diagram source={text} onRender={(svg) => setSvg(svg)} />
       </div>
     </>
   );
