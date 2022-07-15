@@ -8,6 +8,7 @@ import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { app } from "./firebase";
 import { getAuth } from "firebase/auth";
 import List from "./List";
+import EmbeddableDiagram from "./EmbeddableDiagram";
 
 const auth = getAuth(app);
 
@@ -61,6 +62,10 @@ root.render(
         <Route path="/login" element={<Login />} />
         <Route path="/list" element={<List />} />
         <Route path="/diagrams/:diagramName" element={<App />} />
+        <Route
+          path="/diagrams/:diagramName/embed"
+          element={<EmbeddableDiagram />}
+        />
       </Routes>
     </HashRouter>
   </React.StrictMode>
