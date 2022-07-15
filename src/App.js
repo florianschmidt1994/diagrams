@@ -1,13 +1,17 @@
-import {useEffect, useState} from 'react'
-import {refractor} from 'refractor'
-import {get, getDatabase, ref, set} from 'firebase/database';
-import {app} from "./firebase";
-import {adjectives, animals, colors, uniqueNamesGenerator} from "unique-names-generator";
-import {useAuthState} from "react-firebase-hooks/auth";
-import {getAuth} from "firebase/auth";
-import {Link, useNavigate, useParams} from "react-router-dom";
-import {Editor} from "./Editor";
-import {Diagram} from "./Diagram";
+import { useEffect, useState } from "react";
+import { get, getDatabase, ref, set } from "firebase/database";
+import { app } from "./firebase";
+import {
+  adjectives,
+  animals,
+  colors,
+  uniqueNamesGenerator,
+} from "unique-names-generator";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { getAuth } from "firebase/auth";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { Editor } from "./Editor";
+import { Diagram } from "./Diagram";
 
 // make editor better
 // setup CI / CD
@@ -33,9 +37,6 @@ import {Diagram} from "./Diagram";
 // embed in Confluence button
 // show errors in place
 // combine with GPT-3 auto drawer / vqgan-clip
-
-
-
 
 const defaultValue = `sequenceDiagram
     participant web as Web Browser
@@ -64,110 +65,124 @@ const defaultValue = `sequenceDiagram
         and Response
             blog-->>-web: Successfully posted
         end
-    end`
+    end`;
 
 const database = getDatabase(app);
 const auth = getAuth(app);
 
-
 export default function App() {
+  const [isResizing, setIsResizing] = useState(false);
+  const { diagramName } = useParams();
+  const [text, setText] = useState(diagramName ? "" : defaultValue);
+  const [user, userLoading, userError] = useAuthState(auth);
+  const navigate = useNavigate();
 
-    const [isResizing, setIsResizing] = useState(false)
-    const {diagramName} = useParams()
-    const [text, setText] = useState(diagramName ? "" : defaultValue)
-    const [user, userLoading, userError] = useAuthState(auth);
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        if (diagramName) {
-            const obj = get(ref(database, diagramName)).then(res => {
-                // todo refactor change handling here and pull state up from the editor!
-                if (res.val().source) {
-                    handleChange(res.val().source)
-                } else {
-                    console.log("No source present")
-                }
-            })
+  useEffect(() => {
+    if (diagramName) {
+      const obj = get(ref(database, diagramName)).then((res) => {
+        // todo refactor change handling here and pull state up from the editor!
+        if (res.val().source) {
+          handleChange(res.val().source);
+        } else {
+          console.log("No source present");
         }
-    }, [diagramName])
-
-    function handleChange(e) {
-        const input = e;
-        setText(input)
-        if (diagramName) {
-            saveDiagram(diagramName, input, user)
-        }
+      });
     }
+  }, [diagramName]);
 
-    const [width, setWidth] = useState(420)
-
-    function mouseup() {
-        window.removeEventListener('mousemove', mousemove);
-        window.removeEventListener('mouseup', mouseup);
-        setIsResizing(false)
+  function handleChange(e) {
+    const input = e;
+    setText(input);
+    if (diagramName) {
+      saveDiagram(diagramName, input, user);
     }
+  }
 
-    function mousemove(e) {
-        setWidth(e.x)
-    }
+  const [width, setWidth] = useState(420);
 
-    function handleResize(e) {
-        setIsResizing(true)
-        let prevX = e.x;
-        window.addEventListener("mousemove", mousemove)
-        window.addEventListener("mouseup", mouseup)
-    }
+  function mouseup() {
+    window.removeEventListener("mousemove", mousemove);
+    window.removeEventListener("mouseup", mouseup);
+    setIsResizing(false);
+  }
 
-    function generateRandomName() {
-        return uniqueNamesGenerator({
-            dictionaries: [adjectives, colors, animals],
-            separator: '-',
-        });
-    }
+  function mousemove(e) {
+    setWidth(e.x);
+  }
 
-    function saveDiagram(name, text, user = null) {
-        set(ref(database, name), {
-            source: text,
-            user: (user && user.uid) || "anonymous"
-        })
-    }
+  function handleResize(e) {
+    setIsResizing(true);
+    let prevX = e.x;
+    window.addEventListener("mousemove", mousemove);
+    window.addEventListener("mouseup", mouseup);
+  }
 
-    function saveAndGenerateURL() {
-        const name = diagramName ? diagramName : generateRandomName()
-        saveDiagram(name, text, user);
-        navigate(`/diagrams/${name}`)
-    }
+  function generateRandomName() {
+    return uniqueNamesGenerator({
+      dictionaries: [adjectives, colors, animals],
+      separator: "-",
+    });
+  }
 
-    return (
-        <>
-            <div
-                className='grid grid-cols-[min-content_1fr] grid-rows-[min-content_1fr] h-screen w-screen'>
-                <div
-                    className='col-span-2 text-sm row-span-1 w-full h-12 bg-slate-700 border-b-2 border-slate-900 text-white flex flex-row items-center px-4 py-6 text-sm text-blue-100 font-light font-mono'>
-                    <Link to="/list" className="underline mr-6 hover:darken">All your diagrams</Link>
-                    <Link to="/login" className="underline mr-6">Login</Link>
-                    {/*<button type="button" className="rounded p-2 bg-slate-500 text-white ml-10"*/}
-                    {/*        onClick={exportPNG}>Export as PNG*/}
-                    {/*</button>*/}
+  function saveDiagram(name, text, user = null) {
+    set(ref(database, name), {
+      source: text,
+      user: (user && user.uid) || "anonymous",
+    });
+  }
 
-                    <button type="button" className="underline"
-                            onClick={saveAndGenerateURL}>Store
-                    </button>
-                </div>
-                <div id="resizable" className='bg-slate-800 h-full resize-x relative'
-                     style={{width: `${width}px`, userSelect: isResizing ? "none" : "text"}}>
-                    <Editor value={text} onChange={e => handleChange(e)}/>
-                    <ResizeHandle handleResize={handleResize} isResizing={isResizing}/>
-                </div>
-                <Diagram source={text}/>
-            </div>
-        </>
-    )
+  function saveAndGenerateURL() {
+    const name = diagramName ? diagramName : generateRandomName();
+    saveDiagram(name, text, user);
+    navigate(`/diagrams/${name}`);
+  }
+
+  return (
+    <>
+      <div className="grid grid-cols-[min-content_1fr] grid-rows-[min-content_1fr] h-screen w-screen">
+        <div className="col-span-2 text-sm row-span-1 w-full h-12 bg-slate-700 border-b-2 border-slate-900 text-white flex flex-row items-center px-4 py-6 text-sm text-blue-100 font-light font-mono">
+          <Link to="/list" className="underline mr-6 hover:darken">
+            All your diagrams
+          </Link>
+          <Link to="/login" className="underline mr-6">
+            Login
+          </Link>
+          {/*<button type="button" className="rounded p-2 bg-slate-500 text-white ml-10"*/}
+          {/*        onClick={exportPNG}>Export as PNG*/}
+          {/*</button>*/}
+
+          <button
+            type="button"
+            className="underline"
+            onClick={saveAndGenerateURL}
+          >
+            Store
+          </button>
+        </div>
+        <div
+          id="resizable"
+          className="bg-slate-800 h-full resize-x relative"
+          style={{
+            width: `${width}px`,
+            userSelect: isResizing ? "none" : "text",
+          }}
+        >
+          <Editor value={text} onChange={(e) => handleChange(e)} />
+          <ResizeHandle handleResize={handleResize} isResizing={isResizing} />
+        </div>
+        <Diagram source={text} />
+      </div>
+    </>
+  );
 }
 
-function ResizeHandle({handleResize, isResizing}) {
-    return <div
-        className={`transition-colors w-2 h-40 hover:bg-slate-300 ${isResizing ? "bg-slate-300" : "bg-slate-500"} rounded right-2 top-1/2 absolute -translate-y-1/2`}
-        onMouseDown={(e) => handleResize(e)}
+function ResizeHandle({ handleResize, isResizing }) {
+  return (
+    <div
+      className={`transition-colors w-2 h-40 hover:bg-slate-300 ${
+        isResizing ? "bg-slate-300" : "bg-slate-500"
+      } rounded right-2 top-1/2 absolute -translate-y-1/2`}
+      onMouseDown={(e) => handleResize(e)}
     ></div>
+  );
 }

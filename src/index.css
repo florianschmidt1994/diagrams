@@ -3,26 +3,27 @@
 @tailwind utilities;
 
 html, body, #root {
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
 }
+
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
 
 #mermaid {
-  height: auto !important;
-  max-height: 90vh;
+    height: auto !important;
+    max-height: 90vh;
 }
 
 /* For some reason, mermaidJS renders the error
@@ -30,5 +31,5 @@ image under the dmermaid element under the body of
 the DOM. This hides this element
 */
 #dmermaid > #mermaid {
-  height: 0 !important;
+    height: 0 !important;
 }
