@@ -1,0 +1,11 @@
+.token.keyword {
+    @apply text-red-400
+}
+
+.token.operator {
+    @apply text-yellow-400
+}
+
+.npm__react-simple-code-editor__textarea:focus {
+    outline: none;
+}

@@ -1,5 +1,5 @@
 import Navbar from "../Navbar";
-import { Editor } from "../Editor";
+import { Editor } from "../components/Editor";
 import { Diagram } from "../Diagram";
 import { Resizeable } from "../Resizeable";
 import { useState } from "react";
