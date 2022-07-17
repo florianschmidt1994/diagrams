@@ -2,7 +2,7 @@ import Navbar from "../Navbar";
 import { Editor } from "../Editor";
 import { Diagram } from "../Diagram";
 import { Resizeable } from "../Resizeable";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { generateRandomName } from "../common";
 import { useNavigate } from "react-router-dom";
 import { createDiagram } from "../diagrams";
@@ -38,9 +38,12 @@ export default function CreateDiagram() {
         onSave={(title) => onSave(title, source)}
         onDownload={() => onDownload(source)}
       />
-      <Resizeable className="col-span-2 row-span-1">
+      <Resizeable className="col-span-2 row-span-1 min-h-0 min-w-0">
         <Editor value={source} onChange={(source) => setSource(source)} />
-        <Diagram className="w-full h-full" source={source} />
+        <Diagram
+          source={source}
+          className="h-full w-full min-h-0 min-w-0 p-4"
+        />
       </Resizeable>
     </div>
   );

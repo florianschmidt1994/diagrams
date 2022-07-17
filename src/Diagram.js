@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { createDiagramSVG, noop } from "./common";
+import classnames from "classnames";
 
 // pan - zoom? https://github.com/bumbu/svg-pan-zoom
 // todo: change title and favicon
@@ -27,9 +28,11 @@ export function Diagram({ source, onRender = noop, className = "" }) {
     );
   }
   return (
-    <img
-      className={className}
-      src={`data:image/svg+xml;utf8,${encodeURIComponent(svg)}`}
-    />
+    <div className={classnames(className, "flex justify-center items-center")}>
+      <img
+        className="max-h-full max-w-full min-w-0 min-h-0"
+        src={`data:image/svg+xml;utf8,${encodeURIComponent(svg)}`}
+      />
+    </div>
   );
 }

@@ -57,12 +57,15 @@ export default function EditDiagram() {
         onSave={(title) => onSave(title, diagram.source)}
         onDownload={() => onDownload(diagram.source)}
       />
-      <Resizeable className="col-span-2 row-span-1">
+      <Resizeable className="col-span-2 row-span-1 min-h-0 min-w-0">
         {!loading && !error && (
           <Editor value={diagram.source} onChange={onSourceChange} />
         )}
         {!loading && !error && (
-          <Diagram className="w-full h-full" source={diagram.source} />
+          <Diagram
+            className="w-full h-full min-h-0 min-w-0  p-4"
+            source={diagram.source}
+          />
         )}
       </Resizeable>
     </div>
