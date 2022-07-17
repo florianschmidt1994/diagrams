@@ -1,33 +1,18 @@
-import { useList } from "react-firebase-hooks/database";
-import { getDatabase, ref } from "firebase/database";
+import { getDatabase } from "firebase/database";
 import { app } from "./firebase";
 import { Link } from "react-router-dom";
 import { getAuth } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Navbar from "./Navbar";
+import { useDiagrams } from "./hooks";
 
 const database = getDatabase(app);
 const auth = getAuth(app);
-
-function useDiagrams(user) {
-  const uid = !user ? "invalidUid" : user.uid;
-
-  const path = `/users/${uid}/diagrams`;
-  console.log(path);
-  const [snapshots, loading, error] = useList(ref(database, path));
-
-  if (!user) {
-    return [null, true, false];
-  } else {
-    return [snapshots, loading, error];
-  }
-}
 
 export default function List() {
   const [user, userIsLoading, errorLoadingUser] = useAuthState(auth);
   const [snapshots, loading, error] = useDiagrams(user);
 
-  console.log(snapshots);
   return (
     <div className="w-screen h-screen grid grid-rows-[min-content_1fr]">
       <Navbar />
@@ -41,9 +26,9 @@ export default function List() {
               return (
                 <Link
                   className="block mb-4 text-gray-200 text-center hover:underline"
-                  to={"/diagrams/" + s.val()}
+                  to={"/diagrams/" + s.val().id}
                 >
-                  {s.val()}
+                  {s.val().title}
                 </Link>
               );
             })}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { get, getDatabase, push, ref, set } from "firebase/database";
+import { getDatabase, push, ref, set } from "firebase/database";
 import { app } from "./firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { getAuth } from "firebase/auth";
@@ -8,6 +8,7 @@ import { Editor } from "./Editor";
 import { Diagram } from "./Diagram";
 import Navbar from "./Navbar";
 import downloadSvgAsPng from "./downloadSvgAsPng";
+import { useDiagram } from "./hooks";
 
 // make editor better
 // setup CI / CD
@@ -68,30 +69,25 @@ const auth = getAuth(app);
 
 export default function App() {
   const [isResizing, setIsResizing] = useState(false);
-  const { diagramName } = useParams();
-  const [text, setText] = useState(diagramName ? "" : defaultValue);
+  const { diagramId } = useParams();
+  const [source, setSource] = useState(diagramId ? "" : defaultValue);
+  const [initialLoad, setInitialLoad] = useState(true);
   const [user, userLoading, userError] = useAuthState(auth);
   const navigate = useNavigate();
   const [svg, setSvg] = useState();
+  const [diagram, loading, error] = useDiagram(diagramId);
 
   useEffect(() => {
-    if (diagramName) {
-      const obj = get(ref(database, `diagrams/${diagramName}`)).then((res) => {
-        // todo refactor change handling here and pull state up from the editor!
-        if (res.val().source) {
-          handleChange(res.val().source);
-        } else {
-          console.log("No source present");
-        }
-      });
+    if (diagram && initialLoad) {
+      setSource(diagram.source);
+      setInitialLoad(false);
     }
-  }, [diagramName]);
+  }, [diagram]);
 
-  function handleChange(e) {
-    const input = e;
-    setText(input);
-    if (diagramName) {
-      saveDiagram(diagramName, input, user);
+  function handleEditorChange(text) {
+    setSource(text);
+    if (diagram) {
+      updateDiagram(diagramId, diagram, text);
     }
   }
 
@@ -118,7 +114,7 @@ export default function App() {
     return window.crypto.randomUUID();
   }
 
-  function saveDiagram(name, text, user = null) {
+  function createDiagram(diagramId, text, user = null, title) {
     // todo: handle user not logged in
     if (!user && userLoading) {
       return;
@@ -128,18 +124,35 @@ export default function App() {
       throw new Error("Not logged in!");
     }
 
-    set(ref(database, `diagrams/${name}`), {
+    set(ref(database, `diagrams/${diagramId}`), {
       source: text,
       user: (user && user.uid) || "anonymous",
+      title: title,
     });
 
-    push(ref(database, `users/${user.uid}/diagrams`), name);
+    push(ref(database, `users/${user.uid}/diagrams`), {
+      title: title,
+      id: diagramId,
+    });
   }
 
-  function saveAndGenerateURL() {
-    const name = diagramName ? diagramName : generateRandomName();
-    saveDiagram(name, text, user);
-    navigate(`/diagrams/${name}`);
+  function updateDiagram(diagramId, diagram, text) {
+    // todo: handle user not logged in
+    if (!user && userLoading) {
+      return;
+    }
+
+    if (!user && !userLoading) {
+      throw new Error("Not logged in!");
+    }
+
+    set(ref(database, `diagrams/${diagramId}`), { ...diagram, source: text });
+  }
+
+  function saveAndGenerateURL(title) {
+    const id = diagramId ? diagramId : generateRandomName();
+    createDiagram(id, source, user, title);
+    navigate(`/diagrams/${id}`);
   }
 
   return (
@@ -147,7 +160,7 @@ export default function App() {
       <div className="grid grid-cols-[min-content_1fr] grid-rows-[min-content_1fr] h-screen w-screen">
         <Navbar
           className="col-span-2 row-span-1"
-          onSave={() => {
+          onSave={(diagramName) => {
             if (userLoading) {
               // todo: "edge-case", not sure what to do here
               return;
@@ -156,7 +169,7 @@ export default function App() {
             if (!user) {
               navigate("/login", { state: { intent: "save" } });
             } else {
-              saveAndGenerateURL();
+              saveAndGenerateURL(diagramName);
             }
           }}
           onExport={() => downloadSvgAsPng(svg)}
@@ -169,10 +182,10 @@ export default function App() {
             userSelect: isResizing ? "none" : "text",
           }}
         >
-          <Editor value={text} onChange={(e) => handleChange(e)} />
+          <Editor value={source} onChange={(e) => handleEditorChange(e)} />
           <ResizeHandle handleResize={handleResize} isResizing={isResizing} />
         </div>
-        <Diagram source={text} onRender={(svg) => setSvg(svg)} />
+        <Diagram source={source} onRender={(svg) => setSvg(svg)} />
       </div>
     </>
   );

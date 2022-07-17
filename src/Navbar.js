@@ -6,6 +6,7 @@ import { faDownload, faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
 import { noop } from "./common";
 import { Link, useLocation } from "react-router-dom";
 import classnames from "classnames";
+import { useState } from "react";
 
 const auth = getAuth(app);
 
@@ -30,6 +31,8 @@ function NavbarItem({ active, to, children }) {
 
 export default function Navbar({ className, onSave = noop, onExport = noop }) {
   const [user, loading, error] = useAuthState(auth);
+  const [promptDiagramName, setPromptDiagramName] = useState(false);
+  const [diagramName, setDiagramName] = useState("");
   const { pathname } = useLocation();
 
   return (
@@ -51,16 +54,41 @@ export default function Navbar({ className, onSave = noop, onExport = noop }) {
       <div>
         <button
           type="button"
-          className="text-xs font-bold rounded bg-gray-600 hover:bg-gray-800 border border-gray-500 py-2 px-4 mr-4"
+          className="text-xs font-bold rounded hover:bg-gray-800 py-2 px-4 "
           onClick={onExport}
         >
           <FontAwesomeIcon className="mr-2" icon={faDownload} />
           Export
         </button>
+        <input
+          className={classnames(
+            "transition-[width] rounded-l bg-gray-700 p-2 text-xs font-bold w-52 focus:outline-none border-t border-l border-b border-rose-500",
+            {
+              "w-0 h-0 border-none p-0 invisible": !promptDiagramName,
+            }
+          )}
+          onChange={(e) => setDiagramName(e.target.value)}
+          value={diagramName}
+          placeholder="Enter the name of your diagram"
+          type="text"
+        />
         <button
           type="button"
-          className="text-xs font-bold rounded bg-gray-600 hover:bg-gray-800 border border-gray-500 py-2 px-4 mr-4"
-          onClick={onSave}
+          className={classnames("text-xs font-bold py-2 px-4 mr-4", {
+            "rounded-r bg-rose-500 pl-3 border-t border-b border-r border-rose-500":
+              promptDiagramName,
+            "rounded border border-gray-900 hover:bg-gray-700 hover:border hover:border-gray-700":
+              !promptDiagramName,
+          })}
+          onClick={() => {
+            if (promptDiagramName) {
+              onSave(diagramName);
+              setPromptDiagramName(false);
+            } else {
+              setPromptDiagramName(true);
+            }
+            //onSave
+          }}
         >
           <FontAwesomeIcon className="mr-2" icon={faFloppyDisk} />
           Save

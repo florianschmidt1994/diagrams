@@ -29,9 +29,11 @@ function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+
   if (user) {
     navigate("/list");
   }
+
   return (
     <div className="w-screen h-screen bg-gray-900 flex flex-col items-center justify-center">
       <h1 className="text-gray-100 text-xl font-bold">Welcome Back!</h1>
@@ -150,7 +152,7 @@ root.render(
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegistrationPage />} />
         <Route path="/list" element={<AllDiagrams />} />
-        <Route path="/diagrams/:diagramName" element={<Editor />} />
+        <Route path="/diagrams/:diagramId" element={<Editor />} />
         <Route
           path="/diagrams/:diagramName/embed"
           element={<EmbeddableDiagram />}
