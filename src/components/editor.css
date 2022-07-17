@@ -6,6 +6,14 @@
     @apply text-yellow-400
 }
 
+.token.leftParticipant {
+    @apply text-orange-400
+}
+
+.token.rightParticipant {
+    @apply text-orange-400
+}
+
 .npm__react-simple-code-editor__textarea:focus {
     outline: none;
 }
