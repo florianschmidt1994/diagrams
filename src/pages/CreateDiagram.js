@@ -28,14 +28,14 @@ export default function CreateDiagram() {
     navigate(`/diagrams/${diagramId}`);
   }
 
-  function onExport(source) {}
+  function onDownload(source) {}
 
   return (
     <div className="grid grid-rows-[min-content_1fr] h-screen w-screen">
       <Navbar
         className="col-span-2 row-span-1"
         onSave={(title) => onSave(title, source)}
-        onExport={() => onExport(source)}
+        onDownload={() => onDownload(source)}
       />
       <Resizeable className="col-span-2 row-span-1">
         <Editor value={source} onChange={(source) => setSource(source)} />

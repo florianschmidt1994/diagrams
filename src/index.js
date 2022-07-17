@@ -50,7 +50,7 @@ root.render(
         <Route path="/list" element={<AllDiagrams />} />
         <Route path="/diagrams/:diagramId" element={<EditDiagram />} />
         <Route
-          path="/diagrams/:diagramName/embed"
+          path="/diagrams/:diagramId/embed"
           element={<EmbeddableDiagram />}
         />
       </Routes>

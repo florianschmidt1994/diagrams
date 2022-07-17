@@ -2,9 +2,13 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { getAuth, signOut } from "firebase/auth";
 import { app } from "./firebase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDownload, faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
+import {
+  faDownload,
+  faFloppyDisk,
+  faShareNodes,
+} from "@fortawesome/free-solid-svg-icons";
 import { noop } from "./common";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import classnames from "classnames";
 import { useState } from "react";
 
@@ -29,11 +33,30 @@ function NavbarItem({ active, to, children }) {
   }
 }
 
-export default function Navbar({ className, onSave = noop, onExport = noop }) {
+function NavbarButton({ icon, children, onClick }) {
+  return (
+    <button
+      type="button"
+      className="text-xs font-bold rounded hover:bg-gray-700 py-2 px-4"
+      onClick={onClick}
+    >
+      <FontAwesomeIcon className="mr-2" icon={icon} />
+      {children}
+    </button>
+  );
+}
+
+export default function Navbar({
+  className,
+  onSave = noop,
+  onDownload = noop,
+}) {
   const [user, loading, error] = useAuthState(auth);
   const [promptDiagramName, setPromptDiagramName] = useState(false);
   const [diagramName, setDiagramName] = useState("");
   const { pathname } = useLocation();
+  const { diagramId } = useParams();
+  const navigate = useNavigate();
 
   return (
     <div
@@ -52,14 +75,21 @@ export default function Navbar({ className, onSave = noop, onExport = noop }) {
         </NavbarItem>
       </div>
       <div>
-        <button
-          type="button"
-          className="text-xs font-bold rounded hover:bg-gray-700 py-2 px-4"
-          onClick={onExport}
+        <NavbarButton
+          icon={faShareNodes}
+          onClick={() => {
+            if (diagramId) {
+              navigate(`/diagrams/${diagramId}/embed`);
+            } else {
+              navigate("/login", { state: { intent: "share" } });
+            }
+          }}
         >
-          <FontAwesomeIcon className="mr-2" icon={faDownload} />
-          Export
-        </button>
+          Share
+        </NavbarButton>
+        <NavbarButton icon={faDownload} onClick={onDownload}>
+          Download
+        </NavbarButton>
         <input
           className={classnames(
             "transition-[width] rounded-l bg-gray-700 p-2 text-xs font-bold w-52 focus:outline-none border-t border-l border-b border-rose-500",

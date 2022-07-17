@@ -48,14 +48,14 @@ export default function EditDiagram() {
     navigate(`/diagrams/${diagramId}`);
   }
 
-  function onExport(source) {}
+  function onDownload(source) {}
 
   return (
     <div className="grid grid-rows-[min-content_1fr] h-screen w-screen">
       <Navbar
         className="col-span-2 row-span-1"
         onSave={(title) => onSave(title, diagram.source)}
-        onExport={() => onExport(diagram.source)}
+        onDownload={() => onDownload(diagram.source)}
       />
       <Resizeable className="col-span-2 row-span-1">
         {!loading && !error && (
