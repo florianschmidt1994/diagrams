@@ -3,7 +3,14 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import Editor from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { HashRouter, Link, Route, Routes, useNavigate } from "react-router-dom";
+import {
+  HashRouter,
+  Link,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import {
   useCreateUserWithEmailAndPassword,
   useSignInWithEmailAndPassword,
@@ -18,14 +25,22 @@ const auth = getAuth(app);
 function LoginPage() {
   const [signInWithEmailAndPassword, user, loading, error] =
     useSignInWithEmailAndPassword(auth);
+  const location = useLocation();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
+  const navigate = useNavigate();
+  if (user) {
+    navigate("/list");
+  }
   return (
     <div className="w-screen h-screen bg-gray-900 flex flex-col items-center justify-center">
       <h1 className="text-gray-100 text-xl font-bold">Welcome Back!</h1>
       <h2 className="text-gray-400 mb-10 mt-2 text-sm">
-        Please sign into your account
+        Please sign into your account{" "}
+        {location.state &&
+          location.state.intent &&
+          location.state.intent === "save" &&
+          "to save your diagram"}
       </h2>
       <input
         onChange={(e) => setUsername(e.target.value)}
@@ -82,7 +97,7 @@ function RegistrationPage() {
     <div className="w-screen h-screen bg-gray-900 flex flex-col items-center justify-center">
       <h1 className="text-gray-100 text-xl font-bold">Welcome!</h1>
       <h2 className="text-gray-400 mb-10 mt-2 text-sm">
-        Please fill in the form to continue
+        Please fill in your details to continue
       </h2>
       <input
         onChange={(e) => setUsername(e.target.value)}

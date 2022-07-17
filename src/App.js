@@ -147,7 +147,18 @@ export default function App() {
       <div className="grid grid-cols-[min-content_1fr] grid-rows-[min-content_1fr] h-screen w-screen">
         <Navbar
           className="col-span-2 row-span-1"
-          onSave={saveAndGenerateURL}
+          onSave={() => {
+            if (userLoading) {
+              // todo: "edge-case", not sure what to do here
+              return;
+            }
+
+            if (!user) {
+              navigate("/login", { state: { intent: "save" } });
+            } else {
+              saveAndGenerateURL();
+            }
+          }}
           onExport={() => downloadSvgAsPng(svg)}
         />
         <div
