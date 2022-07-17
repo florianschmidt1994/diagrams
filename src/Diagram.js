@@ -1,27 +1,10 @@
-import mermaid from "mermaid";
 import { useEffect, useState } from "react";
-import { noop } from "./common";
+import { createDiagramSVG, noop } from "./common";
 
 // pan - zoom? https://github.com/bumbu/svg-pan-zoom
 // todo: change title and favicon
 
 export function Diagram({ source, onRender = noop }) {
-  function createDiagramSVG(text) {
-    return new Promise((resolve, reject) => {
-      try {
-        mermaid.parseError = (err, hash) => {
-          reject(err);
-        };
-
-        mermaid.mermaidAPI.render("mermaid", text, (svgCode) => {
-          resolve(svgCode);
-        });
-      } catch (err) {
-        reject(err);
-      }
-    });
-  }
-
   const [svg, setSVG] = useState();
   const [renderingError, setRenderingError] = useState(null);
 

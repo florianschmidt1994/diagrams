@@ -8,7 +8,6 @@ export function useDiagrams(userUid) {
   const uid = !userUid ? "invalidUid" : userUid.uid;
 
   const path = `/users/${uid}/diagrams`;
-  console.log(path);
   const [snapshots, loading, error] = useList(ref(database, path));
 
   if (!userUid) {

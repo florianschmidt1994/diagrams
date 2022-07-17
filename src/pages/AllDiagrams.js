@@ -1,15 +1,15 @@
 import { getDatabase } from "firebase/database";
-import { app } from "./firebase";
+import { app } from "../firebase";
 import { Link } from "react-router-dom";
 import { getAuth } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
-import Navbar from "./Navbar";
-import { useDiagrams } from "./hooks";
+import Navbar from "../Navbar";
+import { useDiagrams } from "../hooks";
 
 const database = getDatabase(app);
 const auth = getAuth(app);
 
-export default function List() {
+export default function AllDiagrams() {
   const [user, userIsLoading, errorLoadingUser] = useAuthState(auth);
   const [snapshots, loading, error] = useDiagrams(user);
 
