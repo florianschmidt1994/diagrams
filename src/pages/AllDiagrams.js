@@ -4,10 +4,20 @@ import { Link } from "react-router-dom";
 import { getAuth } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Navbar from "../Navbar";
-import { useDiagrams } from "../hooks";
+import { useDiagram, useDiagrams } from "../hooks";
+import { Diagram } from "../Diagram";
 
 const database = getDatabase(app);
 const auth = getAuth(app);
+
+function DiagramPreview({ diagramId, className }) {
+  const [diagram, loading, error] = useDiagram(diagramId);
+  if (loading || error) {
+    return <>{loading || JSON.stringify(error)}</>;
+  }
+
+  return <Diagram className={className} source={diagram.source} />;
+}
 
 export default function AllDiagrams() {
   const [user, userIsLoading, errorLoadingUser] = useAuthState(auth);
@@ -16,23 +26,39 @@ export default function AllDiagrams() {
   return (
     <div className="w-screen h-screen grid grid-rows-[min-content_1fr]">
       <Navbar />
-      <div className="bg-gray-900 w-full h-full text-white flex items-center justify-center flex-col">
-        <header className="text-white font-bold text-lg pb-4">
-          All your diagrams
-        </header>
-        <div className="bg-gray-600 p-4 rounded">
-          {snapshots &&
-            snapshots.map((s) => {
-              return (
-                <Link
-                  className="block mb-4 text-gray-200 text-center hover:underline"
-                  to={"/diagrams/" + s.val().id}
-                >
-                  {s.val().title}
-                </Link>
-              );
-            })}
-        </div>
+      <div className="bg-gray-900 h-full text-white p-6">
+        {snapshots &&
+          snapshots.map((s) => {
+            return (
+              <Link
+                className="block bg-gray-700 rounded w-auto h-40 flex flex-row items-center justify-between max-w-2xl"
+                to={"/diagrams/" + s.val().id}
+              >
+                <div className="flex flex-col h-full p-4 justify-between">
+                  <div>
+                    <span className="block text-sm font-bold">
+                      {s.val().title}
+                    </span>
+                    <span className="block text-xs">
+                      Diagram ID: {s.val().id}
+                    </span>
+                  </div>
+                  <div>
+                    <Link
+                      className="text-xs font-bold rounded bg-rose-500 hover:bg-rose-600 py-2 px-4"
+                      to={`/diagrams/${s.val().id}`}
+                    >
+                      Edit
+                    </Link>
+                  </div>
+                </div>
+                <DiagramPreview
+                  className="bg-white h-40 rounded-r"
+                  diagramId={s.val().id}
+                />
+              </Link>
+            );
+          })}
       </div>
     </div>
   );

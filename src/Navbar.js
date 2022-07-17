@@ -14,8 +14,8 @@ function NavbarItem({ active, to, children }) {
   const element = (
     <span
       className={classnames("text-xs font-bold rounded py-2 px-4 mr-4", {
-        "bg-gray-800": active,
-        "hover:bg-gray-800": !active,
+        "bg-gray-700": active,
+        "hover:bg-gray-700": !active,
       })}
     >
       {children}
@@ -54,7 +54,7 @@ export default function Navbar({ className, onSave = noop, onExport = noop }) {
       <div>
         <button
           type="button"
-          className="text-xs font-bold rounded hover:bg-gray-800 py-2 px-4 "
+          className="text-xs font-bold rounded hover:bg-gray-800 py-2 px-4"
           onClick={onExport}
         >
           <FontAwesomeIcon className="mr-2" icon={faDownload} />

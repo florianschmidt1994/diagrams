@@ -39,7 +39,7 @@ export default function CreateDiagram() {
       />
       <Resizeable className="col-span-2 row-span-1">
         <Editor value={source} onChange={(source) => setSource(source)} />
-        <Diagram source={source} />
+        <Diagram className="w-full h-full" source={source} />
       </Resizeable>
     </div>
   );

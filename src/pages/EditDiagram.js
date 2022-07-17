@@ -61,7 +61,9 @@ export default function EditDiagram() {
         {!loading && !error && (
           <Editor value={diagram.source} onChange={onSourceChange} />
         )}
-        {!loading && !error && <Diagram source={diagram.source} />}
+        {!loading && !error && (
+          <Diagram className="w-full h-full" source={diagram.source} />
+        )}
       </Resizeable>
     </div>
   );
