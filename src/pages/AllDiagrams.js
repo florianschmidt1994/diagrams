@@ -1,6 +1,6 @@
 import { getDatabase } from "firebase/database";
 import { app } from "../firebase";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getAuth } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Navbar from "../Navbar";
@@ -22,11 +22,16 @@ function DiagramPreview({ diagramId, className }) {
 export default function AllDiagrams() {
   const [user, userIsLoading, errorLoadingUser] = useAuthState(auth);
   const [snapshots, loading, error] = useDiagrams(user);
+  const navigate = useNavigate();
+
+  if (!user && !userIsLoading) {
+    navigate("/login", { state: { intent: "viewList" } });
+  }
 
   return (
     <div className="w-screen h-screen grid grid-rows-[min-content_1fr]">
       <Navbar />
-      <div className="bg-gray-900 h-full text-white p-6">
+      <div className="bg-gray-900 h-full text-white p-6 flex flex-col space-y-4">
         {snapshots &&
           snapshots.map((s) => {
             return (
