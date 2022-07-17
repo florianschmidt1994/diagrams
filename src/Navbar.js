@@ -124,15 +124,29 @@ export default function Navbar({
           Save
         </button>
         |
-        <button
-          type="button"
-          onClick={() => {
-            signOut(auth);
-          }}
-          className="text-xs text-gray-100 font-bold ml-4"
-        >
-          Log Out
-        </button>
+        {user && (
+          <>
+            <span className="text-xs font-bold mx-4">{user.email}</span>|
+            <button
+              type="button"
+              onClick={() => {
+                signOut(auth);
+              }}
+              className="text-xs text-gray-100 font-bold ml-4"
+            >
+              Log Out
+            </button>
+          </>
+        )}
+        {!user && !loading && (
+          <Link
+            to="/login"
+            type="button"
+            className="text-xs text-gray-100 font-bold ml-4"
+          >
+            Sign In
+          </Link>
+        )}
       </div>
     </div>
   );

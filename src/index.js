@@ -38,6 +38,7 @@ const auth = getAuth(app);
 // embed in Confluence button
 // show errors in place
 // combine with GPT-3 auto drawer / vqgan-clip
+// move share download save to editor
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
