@@ -54,7 +54,7 @@ export default function Navbar({ className, onSave = noop, onExport = noop }) {
       <div>
         <button
           type="button"
-          className="text-xs font-bold rounded hover:bg-gray-800 py-2 px-4"
+          className="text-xs font-bold rounded hover:bg-gray-700 py-2 px-4"
           onClick={onExport}
         >
           <FontAwesomeIcon className="mr-2" icon={faDownload} />
