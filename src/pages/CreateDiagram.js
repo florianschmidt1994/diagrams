@@ -3,13 +3,14 @@ import { Editor } from "../components/Editor";
 import { Diagram } from "../Diagram";
 import { Resizeable } from "../Resizeable";
 import { useState } from "react";
-import { generateRandomName } from "../common";
+import { createDiagramSVG, generateRandomName } from "../common";
 import { useNavigate } from "react-router-dom";
 import { createDiagram } from "../diagrams";
 import { getAuth } from "firebase/auth";
 import { app } from "../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { sampleSequenceDiagram } from "../sampleSequenceDiagram";
+import downloadSvgAsPng from "../downloadSvgAsPng";
 
 const auth = getAuth(app);
 
@@ -29,7 +30,11 @@ export default function CreateDiagram() {
     navigate(`/diagrams/${diagramId}`);
   }
 
-  function onDownload(source) {}
+  function onDownload(source) {
+    createDiagramSVG(source)
+      .then(downloadSvgAsPng)
+      .catch((err) => console.error(err));
+  }
 
   return (
     <div className="grid grid-rows-[min-content_1fr] h-screen w-screen">

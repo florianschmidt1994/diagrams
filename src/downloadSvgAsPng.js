@@ -37,7 +37,7 @@ async function renderSVGToCanvas(ctx, svgCode) {
 }
 
 export default async function downloadSvgAsPng(svg) {
-  const { canvas, ctx } = createCanvas();
+  const { canvas, ctx } = createCanvas(4000, 4000);
   await renderSVGToCanvas(ctx, svg);
   addWhiteBackground(canvas);
   downloadCanvasAsPNG(canvas);
