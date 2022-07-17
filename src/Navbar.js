@@ -65,14 +65,24 @@ export default function Navbar({
         " w-full h-16 py-2 px-6 flex items-center justify-between bg-gray-900 border-b border-gray-800 text-gray-100"
       }
     >
-      <div>
-        <span className="font-bold mr-6">Diagrams</span>
-        <NavbarItem active={pathname === "/list"} to="/list">
-          My Diagrams
-        </NavbarItem>
-        <NavbarItem active={pathname === "/"} to="/">
-          Editor
-        </NavbarItem>
+      <div className="flex flex-row items-center">
+        <div className="flex flex-col mr-6">
+          <span className="font-bold mr-6">Diagrams</span>
+          <span
+            className="font-bold text-rose-400"
+            style={{ fontSize: "10px" }}
+          >
+            A MermaidJS Editor
+          </span>
+        </div>
+        <div>
+          <NavbarItem active={pathname === "/list"} to="/list">
+            My Diagrams
+          </NavbarItem>
+          <NavbarItem active={pathname === "/"} to="/">
+            New Diagram
+          </NavbarItem>
+        </div>
       </div>
       <div>
         <NavbarButton
