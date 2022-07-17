@@ -29,13 +29,11 @@ export default function EmbeddableDiagram() {
 
   if (diagram) {
     return (
-      <div className="w-screen h-screen bg-gray-100 grid grid-rows-[1fr_min-content] rounded">
-        <div className="flex max-h-full max-w-full min-w-0 min-h-0 w-full h-full items-center justify-center">
-          <Diagram
-            className="max-h-full max-w-full min-w-0 min-h-0 p-4"
-            source={diagram.source}
-          />
-        </div>
+      <div className="w-full h-full bg-gray-100 grid grid-rows-[1fr_min-content] rounded max-h-full max-w-full min-w-0 min-h-0">
+        <Diagram
+          className="max-h-full max-w-full min-w-0 min-h-0 p-4"
+          source={diagram.source}
+        />
         <div className="w-full bg-gray-500 p-2 px-4 text-white text-sm flex flex-row gap-4 rounded-b">
           <Link
             target="_blank"
