@@ -1,4 +1,4 @@
-const defaultValue = `sequenceDiagram
+export const sampleSequenceDiagram = `sequenceDiagram
     participant web as Web Browser
     participant blog as Blog Service
     participant account as Account Service

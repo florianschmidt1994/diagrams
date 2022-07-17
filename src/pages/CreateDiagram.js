@@ -2,18 +2,19 @@ import Navbar from "../Navbar";
 import { Editor } from "../Editor";
 import { Diagram } from "../Diagram";
 import { Resizeable } from "../Resizeable";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { generateRandomName } from "../common";
 import { useNavigate } from "react-router-dom";
 import { createDiagram } from "../diagrams";
 import { getAuth } from "firebase/auth";
 import { app } from "../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { sampleSequenceDiagram } from "../sampleSequenceDiagram";
 
 const auth = getAuth(app);
 
 export default function CreateDiagram() {
-  const [source, setSource] = useState("");
+  const [source, setSource] = useState(sampleSequenceDiagram);
   const [user, loading, error] = useAuthState(auth);
   const navigate = useNavigate();
 
