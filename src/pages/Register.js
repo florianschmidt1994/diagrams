@@ -57,7 +57,7 @@ export function Register() {
       </button>
       <span className="text-gray-100 mt-8 text-sm">
         Already have an account?{" "}
-        <Link className="text-rose-500" to="/register">
+        <Link className="text-rose-500" to="/login">
           Sign In
         </Link>
       </span>

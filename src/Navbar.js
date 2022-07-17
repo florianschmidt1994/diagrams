@@ -66,7 +66,7 @@ export default function Navbar({
       }
     >
       <div>
-        <span className="font-bold mr-6">App Name</span>
+        <span className="font-bold mr-6">Diagrams</span>
         <NavbarItem active={pathname === "/list"} to="/list">
           My Diagrams
         </NavbarItem>
