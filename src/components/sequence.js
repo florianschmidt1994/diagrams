@@ -5,7 +5,6 @@ const arrows = new RegExp(
 );
 
 const arrowsWithActivation = new RegExp(`(${arrows.source})[\\+-]?`);
-console.log(arrowsWithActivation);
 
 const leftParticipant = new RegExp(
   `(\\w+)(?=(${arrowsWithActivation.source}))`
@@ -17,7 +16,7 @@ const rightParticipant = new RegExp(
 export default {
   keyword: {
     pattern:
-      /(?<=(\s|^))(sequenceDiagram|alt|opt|end|par|else|participant|actor|loop|activate|deactivate|Note|over|right of|left of|critical)(?=(\s|$))/,
+      /(?<=(\s|^))(sequenceDiagram|alt|opt|end|par|else|participant|actor|loop|activate|deactivate|Note|over|right of|left of|critical)(?=(\s|$))/i,
   },
   leftParticipant: {
     pattern: leftParticipant,
@@ -27,6 +26,6 @@ export default {
   },
   operator: {
     pattern:
-      /((?<!-)->(?!>)|(?<!-)-->(?!>)|(?<!-)->>(?!>)|(?<!-)-->>(?!>)|(?<!-)-->>(?!>)|(?<!-)-x(?!>)|(?<!-)--x(?!>)|(?<!-)-\)(?!>)|(?<!-)--\)(?!>))[+-]?/,
+      /((?<!-)->(?!>)|(?<!-)-->(?!>)|(?<!-)->>(?!>)|(?<!-)-->>(?!>)|(?<!-)-x(?!>)|(?<!-)--x(?!>)|(?<!-)-\)(?!>)|(?<!-)--\)(?!>))[+-]?/,
   },
 };
