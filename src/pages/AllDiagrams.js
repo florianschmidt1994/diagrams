@@ -6,14 +6,34 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import Navbar from "../Navbar";
 import { useDiagram, useDiagrams } from "../hooks";
 import { Diagram } from "../Diagram";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import classnames from "classnames";
 
 const database = getDatabase(app);
 const auth = getAuth(app);
 
 function DiagramPreview({ diagramId, className }) {
   const [diagram, loading, error] = useDiagram(diagramId);
-  if (loading || error) {
-    return <>{loading || JSON.stringify(error)}</>;
+
+  if (loading) {
+    return (
+      <div
+        className={classnames(
+          className,
+          "w-full h-hull flex items-center justify-center"
+        )}
+      >
+        <FontAwesomeIcon
+          className="text-gray-900 animate-spin text-xl"
+          icon={faSpinner}
+        />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <>{JSON.stringify(error)}</>;
   }
 
   return <Diagram className={className} source={diagram.source} />;

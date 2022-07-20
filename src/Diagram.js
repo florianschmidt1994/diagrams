@@ -29,10 +29,12 @@ export function Diagram({ source, onRender = noop, className = "" }) {
   }
   return (
     <div className={classnames(className, "flex justify-center items-center")}>
-      <img
-        className="max-h-full max-w-full min-w-0 min-h-0"
-        src={`data:image/svg+xml;utf8,${encodeURIComponent(svg)}`}
-      />
+      {svg && (
+        <img
+          className="max-h-full max-w-full min-w-0 min-h-0"
+          src={`data:image/svg+xml;utf8,${encodeURIComponent(svg)}`}
+        />
+      )}
     </div>
   );
 }
