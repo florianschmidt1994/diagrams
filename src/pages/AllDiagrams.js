@@ -58,7 +58,7 @@ export default function AllDiagrams() {
                   </div>
                 </div>
                 <DiagramPreview
-                  className="bg-white h-40 rounded-r p-2"
+                  className="bg-white h-40 w-72 rounded-r p-2"
                   diagramId={s.val().id}
                 />
               </Link>
