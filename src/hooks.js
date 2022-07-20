@@ -4,17 +4,17 @@ import { app } from "./firebase";
 
 const database = getDatabase(app);
 
-export function useDiagrams(userUid) {
-  const uid = !userUid ? "invalidUid" : userUid.uid;
+export function useDiagrams(user) {
+  let query;
 
-  const path = `/users/${uid}/diagrams`;
-  const [snapshots, loading, error] = useList(ref(database, path));
-
-  if (!userUid) {
-    return [null, true, false];
+  if (user) {
+    const path = `/users/${user.uid}/diagrams`;
+    query = ref(database, path);
   } else {
-    return [snapshots, loading, error];
+    query = null;
   }
+
+  return useList(query);
 }
 
 export function useDiagram(diagramId) {
